@@ -1,17 +1,15 @@
 import csv
-from functools import lru_cache
 from operator import itemgetter
-from pathlib import Path
+from os.path import dirname
+from pathlib2 import Path
 
 data_dir = Path(__file__).parent / "country_data" / "data"
 
 
-@lru_cache(1)
 def available_languages():
     return sorted(x.name for x in data_dir.iterdir() if (x / "country.csv").exists())
 
 
-@lru_cache()
 def countries_for_language(lang, encoding='utf8'):
     path = data_dir / _clean_lang(lang) / "country.csv"
     with path.open(encoding=encoding) as file_:
@@ -23,9 +21,8 @@ def _clean_lang(lang):
     try:
         return _languages()[cleaned_lang]
     except KeyError:
-        raise ValueError("Language {} not found".format(lang)) from None
+        raise ValueError("Language {} not found".format(lang))
 
 
-@lru_cache(1)
 def _languages():
     return {language.lower(): language for language in available_languages()}
